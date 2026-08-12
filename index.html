@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DownAll - تحميل الفيديوهات والصور</title>
+  <meta name="description" content="حمّل الفيديوهات والصور من أشهر منصات التواصل بسهولة.">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+      min-height: 100vh;
+    }
+
+    header {
+      background: white;
+      padding: 18px 25px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .hero {
+      max-width: 850px;
+      margin: 80px auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 18px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 18px;
+      margin-bottom: 35px;
+    }
+
+    .box {
+      background: white;
+      padding: 10px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      border: 0;
+      outline: none;
+      padding: 18px;
+      font-size: 16px;
+      direction: ltr;
+      border-radius: 12px;
+      background: #f3f4f6;
+    }
+
+    button {
+      border: 0;
+      background: #111827;
+      color: white;
+      padding: 0 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .platforms {
+      margin-top: 35px;
+      color: #6b7280;
+      line-height: 2;
+    }
+
+    .result {
+      display: none;
+      margin-top: 25px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .box {
+        flex-direction: column;
+      }
+
+      button {
+        height: 55px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">DownAll</div>
+</header>
+
+<main class="hero">
+
+  <h1>حمّل الفيديوهات والصور بسهولة</h1>
+
+  <p class="subtitle">
+    الصق رابط الفيديو أو الصورة للبدء
+  </p>
+
+  <div class="box">
+    <input
+      id="url"
+      type="url"
+      placeholder="الصق الرابط هنا..."
+    >
+
+    <button onclick="downloadMedia()">
+      تنزيل
+    </button>
+  </div>
+
+  <div class="result" id="result">
+    سيتم ربط زر التنزيل بمحرك التحميل في الخطوة القادمة.
+  </div>
+
+  <div class="platforms">
+    يدعم المشروع لاحقًا منصات مثل:
+    <br>
+    YouTube · TikTok · Instagram · Facebook · X · Reddit · Pinterest
+  </div>
+
+</main>
+
+<script>
+function downloadMedia() {
+  const url = document.getElementById("url").value.trim();
+  const result = document.getElementById("result");
+
+  if (!url) {
+    alert("الصق رابط الفيديو أو الصورة أولًا");
+    return;
+  }
+
+  result.style.display = "block";
+  result.textContent = "تم استلام الرابط. سنربطه بمحرك التحميل في الخطوة القادمة.";
+}
+</script>
+
+</body>
+</html>
