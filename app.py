@@ -125,32 +125,27 @@ def download():
         job_id + ".%(ext)s"
     )
 
-    ydl_opts = {
+    # Optional cookies file. Facebook / Instagram (and sometimes YouTube)
+    # frequently require a logged-in session to allow downloads from a
+    # datacenter IP. If present, this file is used automatically.
+    # To create one: export cookies from your browser (e.g. with the
+    # "Get cookies.txt" extension) while logged into the relevant site,
+    # then upload it to Render as a Secret File at this exact path.
+    COOKIES_FILE = "/app/cookies.txt" if os.path.exists("/app/cookies.txt") else None
+
+    base_opts = {
         "outtmpl": output_template,
-
-        # Best quality with audio, then fallback to best single file
-        "format": "bv*+ba/b",
-
         "merge_output_format": "mp4",
-
         "noplaylist": True,
-
         "quiet": True,
-
         "no_warnings": True,
-
-        "retries": 2,
-
-        "fragment_retries": 2,
-
+        "retries": 3,
+        "fragment_retries": 3,
         "socket_timeout": 30,
-
-        # Keep filenames safe
         "restrictfilenames": True,
-
-        # Use FFmpeg installed inside Docker
         "ffmpeg_location": "/usr/bin/ffmpeg",
-
+        # Helps avoid geo related blocks
+        "geo_bypass": True,
         "http_headers": {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -161,13 +156,55 @@ def download():
         }
     }
 
+    if COOKIES_FILE:
+        base_opts["cookiefile"] = COOKIES_FILE
+
+    # A list of option overrides to try in order. YouTube in particular
+    # blocks the default "web" client on many datacenter IPs with a
+    # "Sign in to confirm you're not a bot" error. The android/ios
+    # player clients frequently bypass this because they use a
+    # different (unauthenticated) API path.
+    attempts = [
+        {
+            "format": "bv*+ba/b",
+            "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+        },
+        {
+            "format": "bv*+ba/b",
+            "extractor_args": {"youtube": {"player_client": ["ios"]}},
+        },
+        {
+            # Last resort: a single progressive stream, no merge needed
+            "format": "best",
+        },
+    ]
+
+    last_error = None
+    info = None
+    title = "video"
+
+    for attempt_opts in attempts:
+        ydl_opts = {**base_opts, **attempt_opts}
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                title = info.get("title") or "video"
+            last_error = None
+            break
+        except yt_dlp.utils.DownloadError as e:
+            last_error = e
+            # Clean up any partial file before trying the next strategy
+            for f in glob.glob(os.path.join(DOWNLOAD_DIR, job_id + ".*")):
+                try:
+                    os.remove(f)
+                except Exception:
+                    pass
+            continue
+
+    if last_error is not None:
+        raise last_error
+
     try:
-
-        # Download
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-
-            title = info.get("title") or "video"
 
         # Find generated file
         files = glob.glob(
