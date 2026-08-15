@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>DownAll - تحميل الفيديوهات والصور</title>
+    <title>المركز الرقمي | تحميل الفيديوهات والصور</title>
+
+    <meta name="description"
+          content="المركز الرقمي لتحميل الفيديوهات والصور بسهولة من الإنترنت">
 
     <style>
         * {
@@ -13,13 +16,14 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f7f8fa;
-            color: #172033;
+            min-height: 100vh;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #f5f7fa;
+            color: #17233c;
         }
 
         header {
-            height: 70px;
+            height: 80px;
             background: white;
             border-bottom: 1px solid #eee;
             display: flex;
@@ -29,82 +33,135 @@
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 25px;
             font-weight: bold;
         }
 
-        main {
-            max-width: 900px;
-            margin: 100px auto;
-            padding: 20px;
+        .hero {
+            max-width: 950px;
+            margin: auto;
+            padding: 90px 20px 50px;
             text-align: center;
         }
 
-        h1 {
-            font-size: 42px;
-            margin-bottom: 20px;
+        .hero h1 {
+            font-size: clamp(35px, 6vw, 65px);
+            margin: 0 0 20px;
         }
 
-        .description {
-            color: #666;
-            margin-bottom: 35px;
+        .hero p {
+            color: #707070;
+            font-size: 20px;
+            margin-bottom: 40px;
         }
 
         .download-box {
-            display: flex;
-            gap: 10px;
             background: white;
-            padding: 10px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            max-width: 850px;
+            margin: auto;
+            padding: 15px;
+            border-radius: 25px;
+            box-shadow: 0 15px 45px rgba(0,0,0,.08);
         }
 
-        input {
+        .form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #url {
             flex: 1;
-            border: 0;
+            min-width: 0;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 17px;
             outline: none;
-            padding: 18px;
-            font-size: 16px;
             direction: ltr;
         }
 
-        button {
-            border: 0;
-            background: #172b4d;
+        #url:focus {
+            border-color: #172d50;
+        }
+
+        #download {
+            border: none;
+            border-radius: 15px;
+            padding: 0 35px;
+            background: #172d50;
             color: white;
-            padding: 0 30px;
-            border-radius: 12px;
-            font-size: 16px;
+            font-size: 17px;
             cursor: pointer;
         }
 
-        button:disabled {
+        #download:hover {
+            opacity: .9;
+        }
+
+        #download:disabled {
             opacity: .6;
             cursor: wait;
         }
 
         #status {
-            margin-top: 25px;
-            min-height: 30px;
+            display: none;
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
         }
 
-        .platforms {
-            margin-top: 35px;
+        .success {
+            display: block !important;
+            background: #e9f8ee;
+            color: #16823b;
+        }
+
+        .error {
+            display: block !important;
+            background: #fff0f0;
+            color: #c62828;
+        }
+
+        .loading {
+            display: block !important;
+            background: #f0f3f8;
+            color: #172d50;
+        }
+
+        .supported {
+            margin-top: 45px;
             color: #777;
+            font-size: 17px;
+            line-height: 2;
         }
 
-        @media(max-width:600px) {
+        footer {
+            text-align: center;
+            color: #888;
+            padding: 40px 20px;
+        }
 
-            h1 {
-                font-size: 30px;
+        @media (max-width: 650px) {
+            header {
+                padding: 0 20px;
             }
 
-            .download-box {
+            .hero {
+                padding-top: 60px;
+            }
+
+            .form {
                 flex-direction: column;
             }
 
-            button {
-                height: 55px;
+            #download {
+                height: 60px;
+            }
+
+            #url {
+                width: 100%;
+                height: 60px;
             }
         }
     </style>
@@ -113,127 +170,237 @@
 <body>
 
 <header>
-    <div class="logo">DownAll</div>
+    <div class="logo">المركز الرقمي</div>
+    <div>Digital Center</div>
 </header>
 
-<main>
+<main class="hero">
 
     <h1>حمّل الفيديوهات والصور بسهولة</h1>
 
-    <p class="description">
+    <p>
         الصق رابط الفيديو أو الصورة للبدء
     </p>
 
     <div class="download-box">
 
-        <input
-            id="url"
-            type="url"
-            placeholder="الصق الرابط هنا..."
-            autocomplete="off"
-        >
+        <div class="form">
 
-        <button id="downloadBtn">
-            تنزيل
-        </button>
+            <input
+                id="url"
+                type="url"
+                placeholder="الصق الرابط هنا..."
+                autocomplete="off"
+            >
+
+            <button id="download" onclick="startDownload()">
+                تنزيل
+            </button>
+
+        </div>
+
+        <div id="status"></div>
 
     </div>
 
-    <div id="status"></div>
-
-    <div class="platforms">
-        يدعم حاليًا:
+    <div class="supported">
+        يدعم حاليًا:<br>
         YouTube · TikTok · Instagram · Facebook · X · Reddit · Pinterest
     </div>
 
 </main>
 
+<footer>
+    © 2026 المركز الرقمي
+</footer>
+
+
 <script>
 
-const button = document.getElementById("downloadBtn");
-const input = document.getElementById("url");
-const status = document.getElementById("status");
+const RENDER_SERVER =
+    "https://downloader-site-y3k0.onrender.com";
 
 
-button.addEventListener("click", async () => {
+async function startDownload() {
 
-    const url = input.value.trim();
+    const input =
+        document.getElementById("url");
+
+    const button =
+        document.getElementById("download");
+
+    const status =
+        document.getElementById("status");
+
+    const url =
+        input.value.trim();
+
 
     if (!url) {
-        status.textContent = "ضع الرابط أولاً.";
+
+        showStatus(
+            "الرجاء لصق رابط أولاً",
+            "error"
+        );
+
         return;
     }
 
+
     button.disabled = true;
     button.textContent = "جاري التحميل...";
-    status.textContent = "جاري معالجة الرابط...";
+
+    showStatus(
+        "جاري إرسال الرابط إلى خادم التحميل...",
+        "loading"
+    );
+
 
     try {
 
-        const response = await fetch("/api/download", {
+        const response = await fetch(
+            RENDER_SERVER + "/download",
+            {
+                method: "POST",
 
-            method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                url: url
-            })
-
-        });
+                body: JSON.stringify({
+                    url: url
+                })
+            }
+        );
 
 
         if (!response.ok) {
 
-            let error = "فشل التحميل.";
-
-            try {
-                const data = await response.json();
-
-                if (data.error) {
-                    error = data.error;
-                }
-
-            } catch (_) {}
-
-            throw new Error(error);
+            throw new Error(
+                "HTTP " + response.status
+            );
         }
 
 
-        const blob = await response.blob();
+        const contentType =
+            response.headers.get("content-type") || "";
 
-        const downloadUrl = window.URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
+        /*
+         * إذا كان السيرفر يرجع JSON
+         */
+        if (contentType.includes("application/json")) {
 
-        a.href = downloadUrl;
+            const data =
+                await response.json();
 
-        a.download = "download.mp4";
 
-        document.body.appendChild(a);
+            if (data.download_url) {
 
-        a.click();
+                window.location.href =
+                    data.download_url;
 
-        a.remove();
+                showStatus(
+                    "تم تجهيز الملف للتحميل",
+                    "success"
+                );
 
-        window.URL.revokeObjectURL(downloadUrl);
+            }
 
-        status.textContent = "تم التحميل بنجاح.";
+            else if (data.url) {
+
+                window.location.href =
+                    data.url;
+
+                showStatus(
+                    "تم تجهيز الملف للتحميل",
+                    "success"
+                );
+
+            }
+
+            else {
+
+                throw new Error(
+                    data.error ||
+                    "لم يتم العثور على رابط التحميل"
+                );
+            }
+
+        }
+
+        /*
+         * إذا كان السيرفر يرجع الملف مباشرة
+         */
+        else {
+
+            const blob =
+                await response.blob();
+
+
+            const fileURL =
+                URL.createObjectURL(blob);
+
+
+            const link =
+                document.createElement("a");
+
+
+            link.href = fileURL;
+
+            link.download = "download";
+
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+
+            URL.revokeObjectURL(fileURL);
+
+
+            showStatus(
+                "تم التحميل بنجاح",
+                "success"
+            );
+        }
+
 
     } catch (error) {
 
-        status.textContent = error.message;
+        console.error(error);
 
-    } finally {
 
-        button.disabled = false;
+        showStatus(
+            "فشل التحميل. تأكد من الرابط وحاول مرة أخرى.",
+            "error"
+        );
 
-        button.textContent = "تنزيل";
     }
 
-});
+
+    button.disabled = false;
+
+    button.textContent = "تنزيل";
+}
+
+
+
+function showStatus(message, type) {
+
+    const status =
+        document.getElementById("status");
+
+
+    status.textContent =
+        message;
+
+
+    status.className =
+        type;
+}
 
 </script>
 
