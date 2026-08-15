@@ -1,3 +1,5 @@
-Flask
-gunicorn
-yt-dlp[default]>=2025.8.1
+from flask import Flask
+     from flask_cors import CORS
+     
+     app = Flask(__name__)
+     CORS(app) # هذا السطر يسمح لموقعك بالاتصال بالـ API بدون مشاكل
