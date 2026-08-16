@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المركز الرقمي | Digital Center</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { 
+                        primary: '#14b8a6', // Teal / Emerald modern tech
+                        secondary: '#6366f1', // Indigo
+                        darkBg: '#050b14', // Very deep rich blue/black
+                        cardBg: 'rgba(15, 23, 42, 0.65)', 
+                        cardBorder: 'rgba(255, 255, 255, 0.08)'
+                    },
+                    fontFamily: { sans: ['Tajawal', 'Inter', 'sans-serif'] },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- ====== بوابة الدفع PayPal ====== -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAv-M58_Mz9JG1E4jzx6XWW986hu9DVf552c-CIw26Mkgs4kQG3IxH_0Oxu4tc8504IiHq3qfO6Mcv9ZM&currency=USD"></script>
+    
+    <!-- ====== Google AdSense Script (جاهز للربط) ====== -->
+    <!-- يمكنك إزالة التعليق عن السطر التالي ووضع رابط الناشر الخاص بك -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID_HERE" crossorigin="anonymous"></script>
+
+    <style>
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #050b14; 
+            color: #f8fafc; 
+            overflow-x: hidden;
+        }
+        
+        .bg-fixed-layer {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(20, 184, 166, 0.05) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 25%);
+            pointer-events: none;
+            transform: translateZ(0);
+        }
+
+        .premium-glass { 
+            background: var(--tw-colors-cardBg);
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--tw-colors-cardBorder);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050b14; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #14b8a6; }
+        .gradient-text { background: linear-gradient(to right, #14b8a6, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px; }
+        
+        .protect-content {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .img-guard-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            background: transparent;
+            cursor: pointer;
+        }
+        /* تصميم العلامة المائية المحسن ليحمي الصور بوضوح (سيتم إزالتها تلقائياً عند التحميل) */
+        .watermark-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-watermark {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.2);
+            transform: rotate(-45deg);
+            white-space: nowrap;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+        }
+        .smooth-scroll {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="bg-fixed-layer"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const API_URL = "https://digital-center-api.bavwbw0.workers.dev/api"; 
+
+        const translations = {
+            ar: {
+                brand: "المركز الرقمي", home: "الرئيسية", rareImages: "التصاميم و القوالب", books: "المكتبة",
+                videoDownloader: "الأدوات", myServices: "الخدمات التقنية", login: "دخول الإدارة", logout: "تسجيل خروج",
+                generateAiImage: "توليد تصميم بالذكاء الاصطناعي", price: "السعر", quantity: "المتوفر", buyNow: "شراء وتحميل",
+                requestService: "اطلب مشروعك الآن", email: "البريد الإلكتروني", service: "نوع الخدمة", sendRequest: "إرسال الطلب",
+                downloadVideo: "تنفيذ", pasteLink: "ضع الرابط هنا...", followUs: "تواصل معنا", search: "ابحث هنا...",
+                uploadBook: "رفع كتاب", bookTitle: "عنوان الكتاب", delete: "حذف", successSend: "تم استلام طلبك! سنتواصل معك قريباً.",
+                adminUsername: "البريد الإلكتروني", adminPassword: "كلمة المرور", generating: "جاري المعالجة...", noData: "لا توجد بيانات متاحة حالياً.",
+                coverImage: "صورة الغلاف (اختياري)", bookFile: "ملف الكتاب (PDF)", downloadBook: "شراء وتحميل", serviceDesc: "عن الخدمة:",
+                saveChanges: "حفظ التحديثات", addService: "خدمة جديدة", descAr: "التفاصيل (عربي)", descEn: "التفاصيل (إنجليزي)",
+                customerName: "اسمك الكريم", requestDetails: "اشرح لنا فكرتك بالتفصيل (كيف تريده أن يعمل؟)", downloading: "جاري التحميل...",
+                rareImagesDesc: "شعارات، قوالب شراكة، وهويات تجارية فريدة من نوعها مصممة ومحمية بتقنيات الذكاء الاصطناعي",
+                booksDesc: "مكتبة رقمية متخصصة - تحميل سريع بعد الدفع",
+                addNewBook: "إضافة كتاب جديد",
+                servicesDesc: "حلول برمجية متكاملة لنجاح أعمالك",
+                nameArLabel: "الاسم (عربي)",
+                nameEnLabel: "الاسم (إنجليزي)",
+                toolsDesc: "أداة مجانية وسريعة لتحميل الفيديوهات من وسائل التواصل الاجتماعي.",
+                untitledVideo: "فيديو بدون عنوان",
+                aboutUsTitle: "من نحن",
+                aboutUsText: "المركز الرقمي هو منصتك الرائدة المتخصصة في تقديم حلول برمجية متكاملة، تطوير المواقع الإلكترونية، برمجة بوتات الذكاء الاصطناعي، وتوفير مكتبة رقمية غنية بالمعرفة.",
+                genType: "اختر نوع التصميم المراد توليده:",
+                typeLogo: "شعار احترافي",
+                typeTemplate: "قالب أعمال / هوية",
+                typeArt: "صورة فنية",
+                close: "إغلاق",
+                fullDetails: "التفاصيل الكاملة",
+                manualUpload: "رفع تصميم",
+                uploadDesign: "رفع صورة جديدة"
+            },
+            en: {
+                brand: "Digital Center", home: "Home", rareImages: "Designs & Templates", books: "Library",
+                videoDownloader: "Tools", myServices: "Tech Services", login: "Admin Login", logout: "Logout",
+                generateAiImage: "Generate AI Design", price: "Price", quantity: "Stock", buyNow: "Buy & Download",
+                requestService: "Start Your Project", email: "Email Address", service: "Service Type", sendRequest: "Submit Request",
+                downloadVideo: "Execute", pasteLink: "Paste link here...", followUs: "Connect With Us", search: "Search here...",
+                uploadBook: "Upload Book", bookTitle: "Book Title", delete: "Delete", successSend: "Request received! We'll contact you soon.",
+                adminUsername: "Email", adminPassword: "Password", generating: "Processing...", noData: "No data available currently.",
+                coverImage: "Cover Image (Opt)", bookFile: "Book File (PDF)", downloadBook: "Buy & Download", serviceDesc: "About:",
+                saveChanges: "Save Updates", addService: "New Service", descAr: "Details (Ar)", descEn: "Details (En)",
+                customerName: "Your Name", requestDetails: "Explain your idea in detail...", downloading: "Downloading...",
+                rareImagesDesc: "Logos, partnership templates, and corporate identities crafted and protected by AI",
+                booksDesc: "Specialized digital library - Fast downloads after payment",
+                addNewBook: "Add New Book",
+                servicesDesc: "Integrated software solutions for your success",
+                nameArLabel: "Name (Ar)",
+                nameEnLabel: "Name (En)",
+                toolsDesc: "Free and fast tool to download videos from social media platforms.",
+                untitledVideo: "Untitled Video",
+                aboutUsTitle: "About Us",
+                aboutUsText: "Digital Center is your leading platform dedicated to providing integrated software solutions, website development, AI bots programming, and offering a digital library rich in knowledge.",
+                genType: "Select design type to generate:",
+                typeLogo: "Professional Logo",
+                typeTemplate: "Business Template",
+                typeArt: "Artistic Image",
+                close: "Close",
+                fullDetails: "Full Details",
+                manualUpload: "Upload",
+                uploadDesign: "Upload New Design"
+            }
+        };
+
+        const fileToBase64 = (file) => new Promise((resolve, reject) => {
+            if(!file) return resolve(null);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        const shuffleArray = (array) => {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+
+        const sortAndShuffle = (items) => {
+            const pinned = items.filter(item => item.isPinned);
+            const unpinned = shuffleArray(items.filter(item => !item.isPinned));
+            return [...pinned, ...unpinned];
+        };
+
+        const Toast = ({ message, type = 'success', onClose, duration = 4000 }) => {
+            React.useEffect(() => { const timer = setTimeout(onClose, duration); return () => clearTimeout(timer); }, [onClose]);
+            return (
+                <div className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 premium-glass px-6 py-3 rounded-full shadow-2xl z-[1000] flex items-center gap-3 fade-in-up border-t border-white/10 ${type === 'error' ? 'bg-red-900/40 text-red-200' : 'bg-emerald-900/40 text-emerald-200'}`}>
+                    <i className={`fas ${type === 'success' ? 'fa-check-circle text-emerald-400' : 'fa-exclamation-triangle text-red-400'}`}></i>
+                    <span className="font-medium text-sm whitespace-nowrap">{message}</span>
+                </div>
+            );
+        };
+
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[1000] p-4 transition-all">
+                    <div className="premium-glass w-full max-w-md rounded-2xl p-6 md:p-8 relative fade-in-up shadow-2xl shadow-primary/10 max-h-[90vh] overflow-y-auto smooth-scroll">
+                        <button onClick={onClose} className="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-gray-500 hover:text-white transition-colors bg-white/5 rounded-full w-8 h-8 flex items-center justify-center"><i className="fas fa-times"></i></button>
+                        <h2 className="text-xl md:text-2xl font-bold mb-6 text-white flex items-center gap-3"><i className="fas fa-layer-group text-primary"></i> {title}</h2>
+                        {children}
+                    </div>
+                </div>
+            );
+        };
+
+        const DetailModal = ({ isOpen, onClose, item, type, t, lang }) => {
+            if (!isOpen || !item) return null;
+            const description = type === 'image' 
+                ? (lang === 'ar' ? (item.descriptionAr || item.description) : (item.descriptionEn || item.description))
+                : item.title;
+            const imgSrc = type === 'image' ? item.imageBase64 : item.cover;
+
+            return (
+                <div className="fixed inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center z-[1000] p-2 sm:p-4 transition-all">
+                    <div className="w-full max-w-5xl relative fade-in-up flex flex-col md:flex-row bg-[#050b14] rounded-2xl overflow-hidden shadow-2xl border border-white/10 max-h-[95vh] sm:max-h-[90vh]">
+                        <button onClick={onClose} className="absolute top-3 right-3 rtl:left-3 rtl:right-auto text-white hover:text-red-400 bg-black/60 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center z-50 backdrop-blur-md border border-white/20 transition-colors"><i className="fas fa-times text-xl"></i></button>
+                        
+                        <div className="w-full md:w-[55%] bg-black relative flex items-center justify-center min-h-[40vh] md:min-h-[70vh]">
+                            {imgSrc ? (
+                                <img src={imgSrc} className="w-full h-full max-h-[45vh] md:max-h-[85vh] object-contain protect-content" alt="Detail" onContextMenu={e => e.preventDefault()} />
+                            ) : (
+                                <i className="fas fa-book-open text-6xl text-gray-600"></i>
+                            )}
+                            {/* العلامة المائية في عرض التفاصيل */}
+                            {type === 'image' && <div className="img-guard-overlay" onContextMenu={(e) => e.preventDefault()}></div>}
+                            {type === 'image' && (
+                                <div className="watermark-container">
+                                    <div className="ai-watermark text-3xl md:text-5xl">Digital Center - {item.serialCode}</div>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="w-full md:w-[45%] p-5 sm:p-8 flex flex-col justify-start md:justify-center overflow-y-auto smooth-scroll max-h-[50vh] md:max-h-[85vh] premium-glass border-none rounded-none">
+                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 flex items-center gap-2"><i className="fas fa-info-circle text-primary"></i> {t.fullDetails}</h3>
+                            <p className="text-gray-300 leading-relaxed text-sm sm:text-base mb-6">{description}</p>
+                            
+                            <div className="mt-auto flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 border-t border-white/10 pt-5">
+                                <span className="bg-primary/20 text-primary px-4 py-2 rounded-xl font-bold text-sm border border-primary/30 flex-1 text-center"><i className="fas fa-tag"></i> {t.price}: ${item.price}</span>
+                                {type === 'image' && (
+                                    <>
+                                        <span className="bg-white/5 text-gray-300 px-4 py-2 rounded-xl text-sm border border-white/10 flex-1 text-center"><i className="fas fa-hashtag text-gray-400"></i> {item.serialCode}</span>
+                                        <span className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-sm border border-emerald-500/20 flex-1 text-center"><i className="fas fa-box"></i> {t.quantity}: {item.quantity || 1}</span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const PayPalModal = ({ isOpen, onClose, amount, onSuccess, itemName }) => {
+            const [paypalError, setPaypalError] = React.useState(false);
+
+            React.useEffect(() => {
+                if (isOpen) {
+                    if (window.paypal) {
+                        setPaypalError(false);
+                        setTimeout(() => {
+                            try {
+                                const container = document.getElementById('paypal-button-container');
+                                if (container) {
+                                    container.innerHTML = ''; 
+                                    window.paypal.Buttons({
+                                        createOrder: (data, actions) => {
+                                            return actions.order.create({
+                                                purchase_units: [{
+                                                    description: itemName,
+                                                    amount: { value: amount.toString() }
+                                                }]
+                                            });
+                                        },
+                                        onApprove: async (data, actions) => {
+                                            const details = await actions.order.capture();
+                                            onSuccess(details);
+                                        },
+                                        onError: (err) => {
+                                            console.error("PayPal Error:", err);
+                                        }
+                                    }).render('#paypal-button-container');
+                                }
+                            } catch (e) {
+                                console.error("PayPal Rendering Error:", e);
+                                setPaypalError(true);
+                            }
+                        }, 100);
+                    } else {
+                        setPaypalError(true);
+                    }
+                }
+            }, [isOpen, amount]);
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] p-4 flex justify-center items-start overflow-y-auto smooth-scroll">
+                    <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md relative shadow-2xl mt-16 mb-16 h-fit shrink-0">
+                        <button onClick={onClose} className="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-gray-500 hover:text-red-500 transition-colors w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center z-10"><i className="fas fa-times"></i></button>
+                        
+                        <div className="pt-2">
+                            <h3 className="text-xl font-bold text-gray-800 text-center mb-2">إتمام الشراء</h3>
+                            <p className="text-center text-gray-500 mb-6 font-medium">قيمة الطلب: <span className="text-blue-600 font-bold">${amount}</span></p>
+                            
+                            {!paypalError ? (
+                                <div id="paypal-button-container" className="relative min-h-[200px] pb-4"></div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-4 py-4 pb-4">
+                                    <div className="bg-yellow-50 text-yellow-800 border border-yellow-200 p-4 rounded-xl text-sm text-center w-full">
+                                        <i className="fas fa-info-circle text-lg mb-2 block text-yellow-500"></i>
+                                        بوابة الدفع غير متاحة حالياً في بيئة المعاينة. يمكنك محاكاة عملية الدفع لتجربة النظام.
+                                    </div>
+                                    <button 
+                                        onClick={() => onSuccess({ id: "TEST_TRANS_" + Date.now() })}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2"
+                                    >
+                                        <i className="fas fa-check-circle"></i> محاكاة الدفع بنجاح
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // مكون إعلان جوجل أدسنس (العلامة الخضراء)
+        const GoogleAdSlot = ({ slotId, clientKey = "ca-pub-XXXXXXXXXXXXXXXX" }) => {
+            React.useEffect(() => {
+                try {
+                    // يقوم بتفعيل الإعلان عند توفر الكود الفعلي
+                    if (window.adsbygoogle) {
+                        (window.adsbygoogle = window.adsbygoogle || []).push({});
+                    }
+                } catch (e) {
+                    console.error("AdSense Error:", e);
+                }
+            }, []);
+
+            return (
+                <div className="w-full border-2 border-dashed border-primary bg-primary/5 hover:bg-primary/10 transition-colors rounded-2xl flex flex-col items-center justify-center p-4 my-6 min-h-[120px] relative overflow-hidden group">
+                    <span className="text-primary font-bold mb-1 z-10 opacity-70 group-hover:opacity-100 transition-opacity"><i className="fas fa-ad"></i> مساحة إعلانية - Google AdSense</span>
+                    <span className="text-[10px] text-gray-400 z-10 mb-2">قم باستبدال Client ID و Slot ID في الكود</span>
+                    
+                    {/* هنا تضع كود الإعلان الحقيقي الذي تستخرجه من جوجل أدسنس */}
+                    <ins className="adsbygoogle w-full text-center block z-20"
+                         style={{ display: "block" }}
+                         data-ad-client={clientKey}
+                         data-ad-slot={slotId}
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                </div>
+            );
+        };
+
+        const SectionImages = ({ lang, t, adminToken }) => {
+            const [images, setImages] = React.useState([]);
+            const [displayImages, setDisplayImages] = React.useState([]);
+            const [loading, setLoading] = React.useState(false);
+            const [toast, setToast] = React.useState(null);
+            const [searchTerm, setSearchTerm] = React.useState('');
+            
+            const [isPaying, setIsPaying] = React.useState(false);
+            const [selectedImage, setSelectedImage] = React.useState(null);
+            
+            const [editModalOpen, setEditModalOpen] = React.useState(false);
+            const [editData, setEditData] = React.useState({ price: 0, descriptionAr: '', descriptionEn: '', quantity: 1 });
+            
+            const [generateModalOpen, setGenerateModalOpen] = React.useState(false);
+            
+            const [manualUploadModalOpen, setManualUploadModalOpen] = React.useState(false);
+            
+            const [detailModalOpen, setDetailModalOpen] = React.useState(false);
+            const [detailItem, setDetailItem] = React.useState(null);
+
+            const fetchImages = async () => {
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_URL}/images`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        setImages(data);
+                        setDisplayImages(sortAndShuffle(data));
+                    }
+                } catch(e) { console.error(e); }
+                setLoading(false);
+            };
+
+            React.useEffect(() => { fetchImages(); }, []);
+
+            React.useEffect(() => {
+                if(searchTerm.trim() === '') {
+                    setDisplayImages(sortAndShuffle(images));
+                } else {
+                    const filtered = images.filter(img => 
+                        ((img.descriptionAr || img.description) && (img.descriptionAr || img.description).toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        ((img.descriptionEn || img.description) && (img.descriptionEn || img.description).toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (img.serialCode && img.serialCode.toLowerCase().includes(searchTerm.toLowerCase()))
+                    );
+                    setDisplayImages(filtered); 
+                }
+            }, [searchTerm, images]);
+
+            const handleGenerate = async (type) => {
+                setGenerateModalOpen(false);
+                setLoading(true);
+                setToast({ msg: t.generating, type: 'success' });
+                try {
+                    const res = await fetch(`${API_URL}/images/generate`, {
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                        body: JSON.stringify({ type })
+                    });
+                    
+                    if(res.ok) {
+                        setToast({ msg: "تم توليد التصميم بنجاح بدقة عالية!", type: 'success' });
+                        fetchImages();
+                    } else {
+                        const errData = await res.json().catch(()=>({}));
+                        setToast({ msg: errData.error || "خطأ في التوليد", type: 'error', duration: 8000 });
+                    }
+                } catch (err) {
+                    setToast({ msg: "فشل الاتصال بالخادم", type: 'error' });
+                }
+                setLoading(false);
+            };
+
+            const handleManualUpload = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    const file = e.target.imageFile.files[0];
+                    if(!file) { setToast({msg: "يرجى اختيار صورة", type: 'error'}); setLoading(false); return; }
+                    
+                    const base64 = await fileToBase64(file);
+
+                    const payload = {
+                        price: Number(e.target.price.value),
+                        quantity: Number(e.target.quantity.value),
+                        descriptionAr: e.target.descAr.value,
+                        descriptionEn: e.target.descEn.value,
+                        imageBase64: base64
+                    };
+
+                    const res = await fetch(`${API_URL}/images/manual`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if(res.ok) {
+                        setToast({ msg: "تم رفع التصميم بنجاح! العلامة المائية مضافة كحماية", type: 'success' });
+                        setManualUploadModalOpen(false);
+                        fetchImages();
+                    } else {
+                        setToast({ msg: "حدث خطأ أثناء الرفع", type: 'error' });
+                    }
+                } catch (err) {
+                    setToast({ msg: "خطأ في الاتصال بالخادم", type: 'error' });
+                }
+                setLoading(false);
+            };
+
+            const handleDelete = async (serialCode, e) => {
+                e.stopPropagation();
+                if(!confirm("هل أنت متأكد من حذف هذا التصميم؟")) return;
+                const res = await fetch(`${API_URL}/images?serialCode=${serialCode}`, { 
+                    method: 'DELETE', headers: { 'Authorization': adminToken } 
+                });
+                if(res.ok) { setToast({ msg: "تم الحذف بنجاح", type: 'success' }); fetchImages(); }
+            };
+
+            const togglePin = async (img, e) => {
+                e.stopPropagation();
+                const updatedImage = { ...img, isPinned: !img.isPinned };
+                const res = await fetch(`${API_URL}/images`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                    body: JSON.stringify(updatedImage)
+                });
+                if(res.ok) fetchImages();
+            };
+
+            const openEditModal = (img, e) => {
+                e.stopPropagation();
+                setSelectedImage(img);
+                setEditData({ 
+                    price: img.price, 
+                    descriptionAr: img.descriptionAr || img.description || '', 
+                    descriptionEn: img.descriptionEn || img.description || '',
+                    quantity: img.quantity || 1
+                });
+                setEditModalOpen(true);
+            };
+
+            const handleSaveEdit = async (e) => {
+                e.preventDefault();
+                const updatedImage = { 
+                    ...selectedImage, 
+                    price: Number(editData.price), 
+                    descriptionAr: editData.descriptionAr, 
+                    descriptionEn: editData.descriptionEn,
+                    quantity: Number(editData.quantity)
+                };
+                
+                const res = await fetch(`${API_URL}/images`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                    body: JSON.stringify(updatedImage)
+                });
+                
+                if(res.ok) {
+                    setToast({ msg: "تم تحديث البيانات بنجاح", type: 'success' });
+                    setEditModalOpen(false);
+                    fetchImages();
+                }
+            };
+
+            const initiatePayment = (img, e) => {
+                e.stopPropagation();
+                setSelectedImage(img);
+                if(adminToken || img.price <= 0) {
+                     handlePaymentSuccess({ id: 'FREE_OR_ADMIN' }, img);
+                } else {
+                    setIsPaying(true);
+                }
+            };
+
+            const handlePaymentSuccess = async (details, imgOverride = null) => {
+                setIsPaying(false);
+                const itemToBuy = imgOverride || selectedImage;
+                
+                setToast({ msg: `جاري تجهيز الصورة عالية الدقة بدون علامة مائية...`, type: 'success', duration: 4000 });
+                
+                try {
+                    const res = await fetch(`${API_URL}/images/buy`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ serialCode: itemToBuy.serialCode })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // يتم سحب الصورة الأصلية base64 بدون العلامة المائية
+                        const a = document.createElement('a');
+                        a.href = data.imageBase64;
+                        a.download = `Design_${itemToBuy.serialCode}.jpg`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        setToast({ msg: `تم تحميل التصميم الأصلي بنجاح!`, type: 'success' });
+                        fetchImages(); 
+                    } else {
+                        setToast({ msg: "حدث خطأ أثناء تنزيل الصورة.", type: 'error' });
+                    }
+                } catch(e) {
+                    setToast({ msg: "فشل الاتصال بالخادم", type: 'error' });
+                }
+                setSelectedImage(null);
+            };
+
+            const openDetail = (img) => {
+                setDetailItem(img);
+                setDetailModalOpen(true);
+            };
+
+            return (
+                <div className="space-y-8 fade-in-up protect-content">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
+                        <div className="pt-2 text-center md:text-start md:rtl:text-right w-full md:w-auto">
+                            <h2 className="text-3xl md:text-4xl font-black mb-2 leading-relaxed pt-2"><span className="gradient-text inline-block">{t.rareImages}</span></h2>
+                            <p className="text-gray-400 text-sm">{t.rareImagesDesc}</p>
+                        </div>
+                        <div className="flex flex-col md:flex-row gap-3 items-center w-full md:w-auto">
+                            <div className="relative w-full md:w-64">
+                                <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                                <input type="text" placeholder={t.search} value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pr-10 pl-4 text-white focus:border-primary outline-none transition" />
+                            </div>
+                            {adminToken && (
+                                <div className="flex gap-2 w-full md:w-auto">
+                                    <button onClick={() => setManualUploadModalOpen(true)} disabled={loading} className="flex-1 md:flex-none px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 rounded-xl text-emerald-400 font-bold transition-all border border-emerald-500/30 overflow-hidden text-sm flex items-center justify-center gap-2">
+                                        <i className="fas fa-cloud-upload-alt"></i> <span className="md:hidden lg:inline">{t.manualUpload}</span>
+                                    </button>
+                                    <button onClick={() => setGenerateModalOpen(true)} disabled={loading} className="flex-1 md:flex-none px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white font-bold transition-all border border-white/10 overflow-hidden flex items-center justify-center">
+                                        {loading ? <i className="fas fa-circle-notch fa-spin text-primary"></i> : <i className="fas fa-wand-magic-sparkles text-primary"></i>}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {displayImages.length === 0 && !loading && (
+                        <div className="text-center py-20 premium-glass rounded-3xl"><i className="fas fa-palette text-6xl text-gray-700 mb-4 block"></i><p className="text-gray-400">{t.noData}</p></div>
+                    )}
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                        {displayImages.map((img, i) => {
+                            const desc = lang === 'ar' ? (img.descriptionAr || img.description) : (img.descriptionEn || img.description);
+                            return (
+                            <div key={i} onClick={() => openDetail(img)} className={`premium-glass rounded-2xl p-3 md:p-4 flex flex-col group cursor-pointer hover:border-white/20 transition-colors ${img.isPinned ? 'border-primary/40 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : ''}`}>
+                                <div className="relative aspect-[3/4] mb-3 md:mb-4 rounded-xl overflow-hidden bg-black/50 border border-white/5">
+                                    <img src={img.imageBase64} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none" alt="Design" />
+                                    
+                                    <div className="img-guard-overlay" onContextMenu={(e) => e.preventDefault()}></div>
+                                    {/* العلامة المائية للصور (يتم حذفها عند التحميل من السيرفر) */}
+                                    <div className="watermark-container">
+                                        <div className="ai-watermark text-xl md:text-3xl">{img.serialCode}</div>
+                                    </div>
+
+                                    {img.isPinned && <div className="absolute top-2 left-2 bg-primary text-white px-2 py-1 rounded text-[10px] md:text-xs z-20"><i className="fas fa-thumbtack"></i></div>}
+                                    <div className="absolute top-2 right-2 bg-black/80 backdrop-blur text-green-400 px-2 py-1 rounded-md text-xs md:text-sm font-bold border border-green-500/20 z-20">${img.price}</div>
+                                    <div className="absolute bottom-2 left-2 bg-black/80 backdrop-blur px-2 py-1 rounded-md text-[10px] md:text-xs font-mono text-gray-300 border border-white/10 z-20"><i className="fas fa-hashtag text-primary"></i> {img.serialCode}</div>
+                                </div>
+                                
+                                <p className="text-xs md:text-sm text-gray-300 line-clamp-2 flex-grow mb-1 font-medium h-8 md:h-10">{desc}</p>
+                                <div className="text-[10px] md:text-xs text-gray-500 mb-2 md:mb-3 flex items-center gap-1"><i className="fas fa-box text-emerald-500/70"></i> {t.quantity}: {img.quantity || 1}</div>
+                                
+                                <div className="flex gap-2 pt-2 border-t border-white/5 mt-auto">
+                                    <button 
+                                        onClick={(e) => initiatePayment(img, e)} 
+                                        className="flex-1 bg-white/5 hover:bg-primary/20 text-primary border border-white/10 hover:border-primary/30 py-1.5 md:py-2 rounded-lg text-xs font-bold flex justify-center items-center gap-2 transition z-30"
+                                    >
+                                        <i className={img.price > 0 && !adminToken ? "fab fa-paypal" : "fas fa-cloud-download-alt"}></i> {t.buyNow}
+                                    </button>
+                                </div>
+                                
+                                {adminToken && (
+                                    <div className="flex gap-1 md:gap-2 mt-2 pt-2 border-t border-white/5 z-30 relative">
+                                        <button onClick={(e) => togglePin(img, e)} className={`flex-1 py-1 rounded text-xs border ${img.isPinned ? 'bg-primary/20 text-primary border-primary/30' : 'bg-white/5 text-gray-400 border-white/10'}`}><i className="fas fa-thumbtack"></i></button>
+                                        <button onClick={(e) => openEditModal(img, e)} className="flex-1 py-1 bg-blue-500/10 text-blue-400 rounded text-xs border border-blue-500/20"><i className="fas fa-edit"></i></button>
+                                        <button onClick={(e) => handleDelete(img.serialCode, e)} className="flex-1 py-1 bg-red-500/10 text-red-400 rounded text-xs border border-red-500/20"><i className="fas fa-trash-alt"></i></button>
+                                    </div>
+                                )}
+                            </div>
+                        )})}
+                    </div>
+
+                    <PayPalModal 
+                        isOpen={isPaying} 
+                        onClose={() => setIsPaying(false)} 
+                        amount={selectedImage ? selectedImage.price : 0} 
+                        itemName={`تصميم رقمي - كود ${selectedImage?.serialCode}`}
+                        onSuccess={handlePaymentSuccess} 
+                    />
+
+                    <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="تعديل تفاصيل التصميم">
+                        <form onSubmit={handleSaveEdit} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1">السعر ($)</label>
+                                    <input type="number" value={editData.price} onChange={e => setEditData({...editData, price: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1">الكمية (المتوفر)</label>
+                                    <input type="number" value={editData.quantity} onChange={e => setEditData({...editData, quantity: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required min="1" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-400 mb-1">الوصف (عربي)</label>
+                                <textarea rows="2" value={editData.descriptionAr} onChange={e => setEditData({...editData, descriptionAr: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-400 mb-1">الوصف (إنجليزي)</label>
+                                <textarea rows="2" value={editData.descriptionEn} onChange={e => setEditData({...editData, descriptionEn: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required dir="ltr"></textarea>
+                            </div>
+                            <button type="submit" className="w-full bg-primary hover:bg-teal-500 text-white font-bold py-2 rounded-lg mt-4 transition">حفظ التعديلات</button>
+                        </form>
+                    </Modal>
+
+                    <Modal isOpen={manualUploadModalOpen} onClose={() => setManualUploadModalOpen(false)} title={t.uploadDesign}>
+                        <form onSubmit={handleManualUpload} className="space-y-4">
+                            <div className="relative group mb-2">
+                                <input name="imageFile" type="file" accept="image/*" required className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div className="w-full bg-primary/10 border border-primary/30 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-sm text-primary group-hover:bg-primary/20 transition">
+                                    <i className="fas fa-cloud-upload-alt text-3xl mb-2"></i>
+                                    اختر الصورة من جهازك
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1">السعر ($)</label>
+                                    <input name="price" type="number" defaultValue="10" className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-1">الكمية</label>
+                                    <input name="quantity" type="number" defaultValue="1" className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required min="1" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-400 mb-1">الوصف (عربي)</label>
+                                <textarea name="descAr" rows="2" placeholder="اكتب تفاصيل التصميم بالعربية..." className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-gray-400 mb-1">الوصف (إنجليزي)</label>
+                                <textarea name="descEn" rows="2" placeholder="Write details in English..." className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-primary" required dir="ltr"></textarea>
+                            </div>
+                            <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-teal-500 text-white font-bold py-3 rounded-lg mt-4 transition flex justify-center items-center">
+                                {loading ? <i className="fas fa-spinner fa-spin"></i> : "رفع وحفظ"}
+                            </button>
+                        </form>
+                    </Modal>
+
+                    <Modal isOpen={generateModalOpen} onClose={() => setGenerateModalOpen(false)} title={t.genType}>
+                        <div className="flex flex-col gap-4">
+                            <button onClick={() => handleGenerate('logo')} className="w-full bg-black/50 hover:bg-primary/20 border border-white/10 hover:border-primary/50 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-3">
+                                <i className="fas fa-bezier-curve text-2xl text-primary"></i> {t.typeLogo}
+                            </button>
+                            <button onClick={() => handleGenerate('template')} className="w-full bg-black/50 hover:bg-secondary/20 border border-white/10 hover:border-secondary/50 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-3">
+                                <i className="fas fa-file-invoice text-2xl text-secondary"></i> {t.typeTemplate}
+                            </button>
+                            <button onClick={() => handleGenerate('image')} className="w-full bg-black/50 hover:bg-pink-500/20 border border-white/10 hover:border-pink-500/50 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-3">
+                                <i className="fas fa-image text-2xl text-pink-500"></i> {t.typeArt}
+                            </button>
+                        </div>
+                    </Modal>
+
+                    <DetailModal isOpen={detailModalOpen} onClose={() => setDetailModalOpen(false)} item={detailItem} type="image" t={t} lang={lang} />
+
+                    {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const SectionBooks = ({ lang, t, adminToken }) => {
+            const [books, setBooks] = React.useState([]);
+            const [displayBooks, setDisplayBooks] = React.useState([]);
+            const [toast, setToast] = React.useState(null);
+            const [loading, setLoading] = React.useState(true);
+            const [downloadingId, setDownloadingId] = React.useState(null);
+            const [searchTerm, setSearchTerm] = React.useState('');
+            const [isPaying, setIsPaying] = React.useState(false);
+            const [selectedBook, setSelectedBook] = React.useState(null);
+            const [detailModalOpen, setDetailModalOpen] = React.useState(false);
+            const [detailItem, setDetailItem] = React.useState(null);
+
+            const fetchBooks = async () => {
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_URL}/books`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        setBooks(data);
+                        setDisplayBooks(sortAndShuffle(data));
+                    }
+                } catch(e) { console.error(e); }
+                setLoading(false);
+            };
+
+            React.useEffect(() => { fetchBooks(); }, []);
+
+             React.useEffect(() => {
+                if(searchTerm.trim() === '') {
+                    setDisplayBooks(sortAndShuffle(books));
+                } else {
+                    const filtered = books.filter(b => 
+                        (b.title && b.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    );
+                    setDisplayBooks(filtered);
+                }
+            }, [searchTerm, books]);
+
+
+            const handleAddBook = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                const title = e.target.title.value;
+                const price = e.target.price.value;
+                
+                const coverBase64 = await fileToBase64(e.target.cover.files[0]);
+                const bookFileBase64 = await fileToBase64(e.target.bookFile.files[0]);
+
+                const res = await fetch(`${API_URL}/books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                    body: JSON.stringify({ 
+                        id: Date.now().toString(), 
+                        title, price, 
+                        cover: coverBase64, 
+                        fileData: bookFileBase64,
+                        isPinned: false
+                    })
+                });
+                if(res.ok) { setToast({ msg: "تم رفع الكتاب بنجاح", type: 'success' }); fetchBooks(); e.target.reset(); }
+                setLoading(false);
+            };
+
+            const handleDelete = async (id, e) => {
+                e.stopPropagation();
+                if(!confirm("هل أنت متأكد من الحذف؟")) return;
+                const res = await fetch(`${API_URL}/books?id=${id}`, { method: 'DELETE', headers: { 'Authorization': adminToken } });
+                if(res.ok) { setToast({ msg: "تم الحذف", type: 'success' }); fetchBooks(); }
+            };
+
+            const togglePin = async (book, e) => {
+                e.stopPropagation();
+                const res = await fetch(`${API_URL}/books`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                    body: JSON.stringify({ id: book.id, isPinned: !book.isPinned })
+                });
+                if(res.ok) fetchBooks();
+            };
+
+            const processDownload = async (id, title) => {
+                setDownloadingId(id);
+                try {
+                    const res = await fetch(`${API_URL}/books/download?id=${id}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.fileData) {
+                            const a = document.createElement('a');
+                            a.href = data.fileData;
+                            a.download = `${title}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    } else {
+                        setToast({ msg: "تعذر تحميل الملف", type: 'error' });
+                    }
+                } catch (error) {
+                    setToast({ msg: "حدث خطأ أثناء التحميل", type: 'error' });
+                }
+                setDownloadingId(null);
+            };
+
+            const handleBuyClick = (book, e) => {
+                e.stopPropagation();
+                if(book.price <= 0 || adminToken) {
+                    processDownload(book.id, book.title);
+                } else {
+                    setSelectedBook(book);
+                    setIsPaying(true);
+                }
+            };
+
+            const handlePaymentSuccess = (details) => {
+                setIsPaying(false);
+                setToast({ msg: `تم الدفع بنجاح! جاري تحميل الكتاب...`, type: 'success', duration: 4000 });
+                processDownload(selectedBook.id, selectedBook.title);
+                setSelectedBook(null);
+            };
+
+            const openDetail = (book) => {
+                setDetailItem(book);
+                setDetailModalOpen(true);
+            };
+
+            return (
+                <div className="space-y-10 fade-in-up protect-content">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6 pt-2">
+                        <div className="text-center md:text-start md:rtl:text-right w-full md:w-auto">
+                            <h2 className="text-3xl md:text-4xl font-black mb-2 leading-relaxed pt-2"><span className="gradient-text inline-block">{t.books}</span></h2>
+                            <p className="text-gray-400 text-sm">{t.booksDesc}</p>
+                        </div>
+                        <div className="relative w-full md:w-64">
+                            <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                            <input type="text" placeholder={t.search} value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                                className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pr-10 pl-4 text-white focus:border-primary outline-none transition" />
+                        </div>
+                    </div>
+
+                    {adminToken && (
+                        <form onSubmit={handleAddBook} className="premium-glass p-6 rounded-2xl flex flex-col gap-5 border border-primary/20">
+                            <h3 className="text-lg font-bold text-white"><i className="fas fa-upload text-primary ml-2"></i> {t.addNewBook}</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="md:col-span-2"><input name="title" required placeholder={t.bookTitle} className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:border-primary outline-none transition" /></div>
+                                <div><input name="price" type="number" required placeholder={t.price + " ($)"} className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:border-primary outline-none transition" /></div>
+                                
+                                <div className="relative group">
+                                    <input name="cover" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                    <div className="w-full bg-black/40 border border-white/10 border-dashed rounded-xl p-3 text-center text-sm text-gray-400 group-hover:border-primary transition"><i className="fas fa-image mr-1"></i> {t.coverImage}</div>
+                                </div>
+                                <div className="relative group md:col-span-2">
+                                    <input name="bookFile" type="file" accept=".pdf" required className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                    <div className="w-full bg-primary/10 border border-primary/30 border-dashed rounded-xl p-3 text-center text-sm text-primary group-hover:bg-primary/20 transition"><i className="fas fa-file-pdf mr-1"></i> اختر {t.bookFile} *</div>
+                                </div>
+                                <button type="submit" disabled={loading} className="md:col-span-2 bg-gradient-to-r from-primary to-secondary py-3 rounded-xl font-bold text-white shadow-lg hover:shadow-primary/20 transition-all">{loading ? <i className="fas fa-spinner fa-spin"></i> : t.uploadBook}</button>
+                            </div>
+                        </form>
+                    )}
+
+                    {loading && books.length === 0 ? (
+                        <div className="flex justify-center py-20"><i className="fas fa-circle-notch fa-spin text-4xl text-primary"></i></div>
+                    ) : displayBooks.length === 0 ? (
+                        <div className="text-center py-20 premium-glass rounded-3xl"><i className="fas fa-books text-6xl text-gray-700 mb-4 block"></i><p className="text-gray-400">{t.noData}</p></div>
+                    ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            {displayBooks.map(book => (
+                                <div key={book.id} onClick={() => openDetail(book)} className={`premium-glass rounded-2xl p-3 md:p-4 flex flex-col group cursor-pointer hover:border-white/20 transition-colors ${book.isPinned ? 'border-primary/40 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : ''}`}>
+                                    <div className="relative aspect-[3/4] mb-3 md:mb-4 rounded-xl overflow-hidden bg-black/50 border border-white/5">
+                                        {book.cover ? (
+                                            <>
+                                                <img src={book.cover} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none" alt={book.title} />
+                                                <div className="img-guard-overlay" onContextMenu={(e) => e.preventDefault()}></div>
+                                            </>
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-4xl text-gray-600"><i className="fas fa-book-open"></i></div>
+                                        )}
+                                        {book.isPinned && <div className="absolute top-2 left-2 bg-primary text-white px-2 py-1 rounded text-[10px] md:text-xs z-20"><i className="fas fa-thumbtack"></i></div>}
+                                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur text-green-400 px-2 py-1 rounded-md text-xs md:text-sm font-bold border border-green-500/20 z-20">${book.price}</div>
+                                    </div>
+                                    <h3 className="font-bold text-xs md:text-sm text-white line-clamp-2 flex-grow mb-2">{book.title}</h3>
+                                    
+                                    <div className="mt-auto flex gap-2 pt-2 border-t border-white/5">
+                                        {book.hasFile && (
+                                            <button 
+                                                onClick={(e) => handleBuyClick(book, e)} 
+                                                disabled={downloadingId === book.id}
+                                                className="flex-1 bg-white/5 hover:bg-primary/20 text-primary border border-white/10 hover:border-primary/30 py-1.5 md:py-2 rounded-lg text-xs font-bold flex justify-center items-center gap-2 transition z-30"
+                                            >
+                                                {downloadingId === book.id ? <i className="fas fa-spinner fa-spin"></i> : <><i className={book.price > 0 && !adminToken ? "fab fa-paypal" : "fas fa-cloud-download-alt"}></i> {t.downloadBook}</>}
+                                            </button>
+                                        )}
+                                    </div>
+                                    {adminToken && (
+                                        <div className="flex gap-1 md:gap-2 mt-2 pt-2 border-t border-white/5 z-30 relative">
+                                            <button onClick={(e) => togglePin(book, e)} className={`flex-1 py-1 rounded text-xs border ${book.isPinned ? 'bg-primary/20 text-primary border-primary/30' : 'bg-white/5 text-gray-400 border-white/10'}`}><i className="fas fa-thumbtack"></i></button>
+                                            <button onClick={(e) => handleDelete(book.id, e)} className="flex-1 py-1 bg-red-500/10 text-red-400 rounded text-xs border border-red-500/20"><i className="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <PayPalModal 
+                        isOpen={isPaying} 
+                        onClose={() => setIsPaying(false)} 
+                        amount={selectedBook ? selectedBook.price : 0} 
+                        itemName={`كتاب: ${selectedBook?.title}`}
+                        onSuccess={handlePaymentSuccess} 
+                    />
+                    <DetailModal isOpen={detailModalOpen} onClose={() => setDetailModalOpen(false)} item={detailItem} type="book" t={t} lang={lang} />
+                    {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const SectionServices = ({ lang, t, adminToken }) => {
+            const [services, setServices] = React.useState([]);
+            const [selectedServiceId, setSelectedServiceId] = React.useState("");
+            const [toast, setToast] = React.useState(null);
+            const [loading, setLoading] = React.useState(false);
+
+            const fetchServices = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/services`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        setServices(data);
+                        if(data.length > 0) setSelectedServiceId(data[0].id);
+                    }
+                } catch(e) { console.error(e); }
+            };
+
+            React.useEffect(() => { fetchServices(); }, []);
+
+            const handleSubmitRequest = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                const formData = new FormData(e.target);
+                const payload = {
+                    customerName: formData.get("customerName"),
+                    email: formData.get("email"),
+                    details: formData.get("details"),
+                    serviceName: services.find(s => s.id === selectedServiceId)?.[lang === 'ar' ? 'nameAr' : 'nameEn'] || "Unknown"
+                };
+                
+                try {
+                    const res = await fetch(`${API_URL}/services/request`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if(res.ok) { setToast({ msg: t.successSend, type: 'success', duration: 5000 }); e.target.reset(); }
+                    else setToast({ msg: "عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.", type: 'error' });
+                } catch(err) { setToast({ msg: "مشكلة في الاتصال بالإنترنت", type: 'error' }); }
+                setLoading(false);
+            };
+
+            const handleAdminUpdate = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_URL}/services`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': adminToken },
+                        body: JSON.stringify(services)
+                    });
+                    if(res.ok) setToast({ msg: "تم حفظ التعديلات بنجاح", type: 'success' });
+                } catch(err) { setToast({ msg: "حدث خطأ", type: 'error' }); }
+                setLoading(false);
+            };
+
+            const updateService = (id, field, value) => setServices(services.map(s => s.id === id ? { ...s, [field]: value } : s));
+            const addNewService = () => setServices([...services, { id: Date.now().toString(), nameAr: 'خدمة جديدة', nameEn: 'New Service', price: 0, descAr: '', descEn: '' }]);
+
+            return (
+                <div className="fade-in-up max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <div className="lg:col-span-7">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 border-b border-white/5 pb-4 pt-2">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-black mb-1 leading-relaxed pt-2"><span className="gradient-text inline-block">{t.myServices}</span></h2>
+                                <p className="text-gray-400 text-sm">{t.servicesDesc}</p>
+                            </div>
+                            {adminToken && <button onClick={addNewService} className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 px-4 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap"><i className="fas fa-plus"></i> {t.addService}</button>}
+                        </div>
+                        
+                        <div className="space-y-4">
+                            {adminToken ? (
+                                <form onSubmit={handleAdminUpdate} className="space-y-4">
+                                    {services.map((srv, idx) => (
+                                        <div key={srv.id} className="premium-glass p-5 rounded-2xl border-r-4 border-r-primary space-y-4 relative">
+                                            <button type="button" onClick={() => setServices(services.filter(s => s.id !== srv.id))} className="absolute top-4 left-4 text-red-500/70 hover:text-red-400 bg-white/5 rounded-full w-8 h-8"><i className="fas fa-times"></i></button>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pr-8 rtl:pr-8 ltr:pl-8 ltr:pr-0">
+                                                <input value={srv.nameAr} onChange={(e) => updateService(srv.id, 'nameAr', e.target.value)} placeholder={t.nameArLabel} className="bg-black/40 rounded-xl p-3 text-sm text-white border border-white/5" />
+                                                <input value={srv.nameEn} onChange={(e) => updateService(srv.id, 'nameEn', e.target.value)} placeholder={t.nameEnLabel} className="bg-black/40 rounded-xl p-3 text-sm text-white border border-white/5" />
+                                                <div className="flex items-center bg-black/40 rounded-xl border border-white/5 px-3"><span className="text-gray-500">$</span><input type="number" value={srv.price} onChange={(e) => updateService(srv.id, 'price', e.target.value)} className="w-full bg-transparent p-3 text-sm text-white font-bold outline-none" /></div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <textarea value={srv.descAr} onChange={(e) => updateService(srv.id, 'descAr', e.target.value)} placeholder={t.descAr} className="bg-black/40 rounded-xl p-3 text-xs text-gray-300 h-20 border border-white/5"></textarea>
+                                                <textarea value={srv.descEn} onChange={(e) => updateService(srv.id, 'descEn', e.target.value)} placeholder={t.descEn} className="bg-black/40 rounded-xl p-3 text-xs text-gray-300 h-20 border border-white/5"></textarea>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <button type="submit" disabled={loading} className="w-full bg-primary/20 border border-primary/50 text-primary py-3 rounded-xl font-bold mt-4 hover:bg-primary/30 transition">{loading ? <i className="fas fa-spinner fa-spin"></i> : t.saveChanges}</button>
+                                </form>
+                            ) : (
+                                services.map(srv => (
+                                    <div key={srv.id} 
+                                        className={`premium-glass p-5 md:p-6 rounded-2xl flex flex-col cursor-pointer transition-all duration-300 ${selectedServiceId === srv.id ? 'border-primary/50 bg-primary/5 shadow-lg shadow-primary/10' : 'border-transparent hover:border-white/10 hover:bg-white/5'}`} 
+                                        onClick={() => setSelectedServiceId(srv.id)}>
+                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
+                                            <h3 className="font-bold text-lg md:text-xl text-white flex items-center gap-3">
+                                                <div className={`w-2 h-2 rounded-full shrink-0 ${selectedServiceId === srv.id ? 'bg-primary' : 'bg-gray-600'}`}></div>
+                                                {lang === 'ar' ? srv.nameAr : srv.nameEn}
+                                            </h3>
+                                            <span className="bg-secondary/20 text-secondary border border-secondary/30 px-4 py-1.5 rounded-full text-sm font-bold w-fit">${srv.price}</span>
+                                        </div>
+                                        <p className="text-gray-400 text-sm sm:pr-5 leading-relaxed">{lang === 'ar' ? srv.descAr : srv.descEn}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="lg:col-span-5">
+                        <div className="premium-glass p-6 md:p-8 rounded-3xl sticky top-28 border border-white/10 shadow-2xl relative overflow-hidden">
+                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-[50px] pointer-events-none"></div>
+                            <h3 className="text-xl md:text-2xl font-black mb-6 flex items-center gap-3 leading-relaxed pt-2"><i className="fas fa-rocket text-primary"></i> {t.requestService}</h3>
+                            <form onSubmit={handleSubmitRequest} className="space-y-5 relative z-10">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">{t.customerName}</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500"><i className="fas fa-user"></i></div>
+                                        <input name="customerName" type="text" required className="w-full bg-black/50 border border-white/10 focus:border-primary rounded-xl py-3 pl-4 pr-11 text-white outline-none transition-colors" placeholder="محمد عبدالله" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">{t.email}</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500"><i className="fas fa-envelope"></i></div>
+                                        <input name="email" type="email" required className="w-full bg-black/50 border border-white/10 focus:border-primary rounded-xl py-3 pl-4 pr-11 text-white outline-none transition-colors" placeholder="example@mail.com" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">{t.service}</label>
+                                    <select name="serviceId" value={selectedServiceId} onChange={(e) => setSelectedServiceId(e.target.value)} className="w-full bg-black/50 border border-white/10 focus:border-primary rounded-xl p-3 text-white outline-none transition-colors appearance-none cursor-pointer">
+                                        {services.map(srv => <option key={srv.id} value={srv.id} className="bg-darkBg">{lang === 'ar' ? srv.nameAr : srv.nameEn}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">{t.requestDetails}</label>
+                                    <textarea name="details" required rows="4" className="w-full bg-black/50 border border-white/10 focus:border-primary rounded-xl p-4 text-white outline-none transition-colors resize-none" placeholder={t.requestDetails}></textarea>
+                                </div>
+                                <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-primary to-secondary hover:from-teal-400 hover:to-indigo-400 py-4 rounded-xl font-bold text-white shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transition-all transform hover:-translate-y-1">
+                                    {loading ? <i className="fas fa-circle-notch fa-spin text-xl"></i> : <span className="flex items-center justify-center gap-2"><i className="fas fa-paper-plane"></i> {t.sendRequest}</span>}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const SectionTools = ({ lang, t }) => {
+            const [videoUrl, setVideoUrl] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+            const [result, setResult] = React.useState(null);
+            const [toast, setToast] = React.useState(null);
+
+            const handleDownload = async (e) => {
+                e.preventDefault();
+                if (!videoUrl) return;
+                
+                setLoading(true);
+                setResult(null);
+
+                try {
+                    const res = await fetch(`${API_URL}/tools/download`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: videoUrl })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        setResult(data);
+                        setToast({ msg: "تم تجهيز الفيديو للتحميل بنجاح!", type: 'success' });
+                    } else {
+                        // عرض رسالة الخطأ القادمة من Cobalt API الحقيقي
+                        setToast({ msg: data.error || "عذراً، فشل جلب الفيديو. تأكد من الرابط.", type: 'error' });
+                    }
+                } catch (err) {
+                    setToast({ msg: "حدث خطأ في الاتصال بالخادم.", type: 'error' });
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="fade-in-up max-w-4xl mx-auto space-y-10">
+                    <div className="text-center border-b border-white/5 pb-8 mb-8 pt-2">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-secondary/20 to-primary/20 text-3xl mb-4 text-white shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+                            <i className="fas fa-photo-film"></i>
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black mb-3 leading-relaxed pt-2"><span className="gradient-text inline-block">{t.videoDownloader}</span></h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-lg px-4">{t.toolsDesc}</p>
+                    </div>
+
+                    {/* خانة إعلان جوجل الأولى (بالعلامة الخضراء) */}
+                    <GoogleAdSlot slotId="YOUR_AD_SLOT_ID_1" />
+
+                    <div className="premium-glass p-5 md:p-10 rounded-3xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[80px] pointer-events-none hidden md:block"></div>
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none hidden md:block"></div>
+
+                        <form onSubmit={handleDownload} className="relative z-10 flex flex-col md:flex-row gap-4 mb-10">
+                            <div className="relative flex-grow">
+                                <div className="absolute inset-y-0 right-0 rtl:left-0 rtl:right-auto flex items-center px-5 text-gray-500">
+                                    <i className="fas fa-link text-xl"></i>
+                                </div>
+                                <input 
+                                    type="url" 
+                                    value={videoUrl}
+                                    onChange={(e) => setVideoUrl(e.target.value)}
+                                    placeholder={t.pasteLink} 
+                                    required
+                                    className="w-full bg-black/50 border-2 border-white/10 hover:border-white/20 focus:border-secondary rounded-2xl py-4 pr-14 pl-4 rtl:pr-14 rtl:pl-4 text-base md:text-lg text-white outline-none transition-all shadow-inner placeholder:text-gray-600" 
+                                />
+                            </div>
+                            <button 
+                                type="submit" 
+                                disabled={loading || !videoUrl} 
+                                className="md:w-auto w-full px-10 py-4 bg-gradient-to-r from-secondary to-primary hover:from-indigo-500 hover:to-teal-500 rounded-2xl font-bold text-white shadow-lg hover:shadow-[0_0_25px_rgba(99,102,241,0.4)] transition-all transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none whitespace-nowrap text-lg flex items-center justify-center gap-3"
+                            >
+                                {loading ? <i className="fas fa-circle-notch fa-spin text-xl"></i> : <><i className="fas fa-cloud-arrow-down"></i> {t.downloadVideo}</>}
+                            </button>
+                        </form>
+
+                        <div className="flex justify-center gap-4 md:gap-6 mt-6 border-t border-white/5 pt-6 text-gray-500 text-xl md:text-2xl">
+                            <i className="fab fa-youtube hover:text-[#FF0000] transition-colors cursor-help" title="YouTube"></i>
+                            <i className="fab fa-tiktok hover:text-white transition-colors cursor-help" title="TikTok"></i>
+                            <i className="fab fa-instagram hover:text-[#E1306C] transition-colors cursor-help" title="Instagram"></i>
+                            <i className="fab fa-twitter hover:text-[#1DA1F2] transition-colors cursor-help" title="Twitter/X"></i>
+                            <i className="fab fa-facebook hover:text-[#1877F2] transition-colors cursor-help" title="Facebook"></i>
+                        </div>
+
+                        {result && (
+                            <div className="mt-10 fade-in-up bg-black/40 border border-white/10 rounded-2xl p-4 md:p-6 relative z-10">
+                                <div className="flex flex-col md:flex-row gap-6 items-start">
+                                    <div className="w-full md:w-1/3 aspect-video bg-black/60 rounded-xl overflow-hidden relative border border-white/5 flex items-center justify-center group">
+                                        {result.thumbnail ? (
+                                            <img src={result.thumbnail} alt={result.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                        ) : (
+                                            <i className="fas fa-video text-5xl text-gray-700"></i>
+                                        )}
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                                            <i className="fas fa-play-circle text-4xl text-white drop-shadow-lg"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="w-full md:w-2/3 flex flex-col justify-between h-full space-y-4">
+                                        <div>
+                                            <h3 className="text-lg md:text-xl font-bold text-white mb-2 line-clamp-2 leading-snug">{result.title || t.untitledVideo}</h3>
+                                            <div className="flex flex-wrap gap-2 text-xs md:text-sm">
+                                                <span className="bg-white/5 px-3 py-1 rounded-lg text-gray-400 border border-white/5"><i className="fas fa-clock text-primary mr-1"></i> {result.duration || "00:00"}</span>
+                                                <span className="bg-white/5 px-3 py-1 rounded-lg text-gray-400 border border-white/5"><i className="fas fa-layer-group text-primary mr-1"></i> {result.platform || "Unknown"}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
+                                            {result.formats && result.formats.map((format, idx) => (
+                                                <a 
+                                                    key={idx}
+                                                    href={format.url} 
+                                                    target="_blank"
+                                                    download
+                                                    className="flex items-center justify-between px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-secondary/50 rounded-xl transition-all group"
+                                                >
+                                                    <span className="font-bold text-gray-200 group-hover:text-white text-sm">{format.quality}</span>
+                                                    <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-md">{format.type || 'MP4'}</span>
+                                                    <i className="fas fa-download text-gray-500 group-hover:text-secondary transition-colors"></i>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* خانة إعلان جوجل الثانية (بالعلامة الخضراء) */}
+                    <GoogleAdSlot slotId="YOUR_AD_SLOT_ID_2" />
+                    
+                    {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [lang, setLang] = React.useState('ar');
+            const [currentTab, setCurrentTab] = React.useState('rareImages');
+            const [adminToken, setAdminToken] = React.useState(localStorage.getItem('adminToken') || null);
+            const [showLogin, setShowLogin] = React.useState(false);
+            const [scrolled, setScrolled] = React.useState(false);
+            const t = translations[lang];
+
+            React.useEffect(() => {
+                document.documentElement.lang = lang;
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, [lang]);
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const res = await fetch(`${API_URL}/login`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: e.target.email.value, password: e.target.password.value })
+                    });
+                    if(res.ok) {
+                        const data = await res.json();
+                        setAdminToken(data.token);
+                        localStorage.setItem('adminToken', data.token);
+                        setShowLogin(false);
+                    } else alert("بيانات الدخول غير صحيحة");
+                } catch (err) {
+                    alert("خطأ في الاتصال");
+                }
+            };
+
+            const tabs = [
+                { id: 'rareImages', icon: 'fa-pen-nib', label: t.rareImages },
+                { id: 'books', icon: 'fa-book-bookmark', label: t.books },
+                { id: 'services', icon: 'fa-code', label: t.myServices },
+                { id: 'tools', icon: 'fa-screwdriver-wrench', label: t.videoDownloader }, 
+            ];
+
+            return (
+                <div className="min-h-screen flex flex-col selection:bg-primary/30 selection:text-white">
+                    <header className={`fixed top-0 w-full z-40 transition-all duration-300 ${scrolled ? 'bg-darkBg/90 backdrop-blur-md border-b border-white/10 shadow-lg' : 'bg-transparent pt-4'}`}>
+                        <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+                            
+                            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setCurrentTab('rareImages')}>
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-xl md:text-2xl shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform shrink-0">
+                                    <i className="fas fa-layer-group text-white"></i>
+                                </div>
+                                <h1 className="text-lg md:text-2xl font-black tracking-tight text-white whitespace-nowrap pt-1">{t.brand}</h1>
+                            </div>
+
+                            <nav className="hidden md:flex items-center p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-sm">
+                                {tabs.map(tab => (
+                                    <button key={tab.id} onClick={() => setCurrentTab(tab.id)} 
+                                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 
+                                        ${currentTab === tab.id ? 'bg-white/10 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+                                        <i className={`fas ${tab.icon} ${currentTab === tab.id ? 'text-primary' : ''}`}></i> {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
+
+                            <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                                {adminToken ? (
+                                    <button onClick={() => { setAdminToken(null); localStorage.removeItem('adminToken'); }} className="text-red-400 hover:text-red-300 bg-red-400/10 px-3 md:px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition border border-red-400/20"><i className="fas fa-sign-out-alt ml-1"></i> <span className="hidden sm:inline">{t.logout}</span></button>
+                                ) : (
+                                    <button onClick={() => setShowLogin(true)} className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center transition hover:bg-white/10"><i className="fas fa-shield-halved"></i></button>
+                                )}
+                                <button onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')} className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold hover:bg-primary/20 transition flex items-center justify-center text-sm md:text-base">
+                                    {lang === 'ar' ? 'EN' : 'ع'}
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="flex-grow container mx-auto px-4 pt-32 pb-28 md:pb-16 min-h-[80vh]">
+                        {currentTab === 'rareImages' && <SectionImages lang={lang} t={t} adminToken={adminToken} />}
+                        {currentTab === 'books' && <SectionBooks lang={lang} t={t} adminToken={adminToken} />}
+                        {currentTab === 'services' && <SectionServices lang={lang} t={t} adminToken={adminToken} />}
+                        {currentTab === 'tools' && <SectionTools lang={lang} t={t} />} 
+                    </main>
+
+                    <nav className="md:hidden fixed bottom-4 left-4 right-4 premium-glass rounded-2xl border border-white/10 flex justify-around p-2 z-40 shadow-2xl">
+                        {tabs.map(tab => (
+                            <button key={tab.id} onClick={() => setCurrentTab(tab.id)} className={`flex flex-col items-center justify-center w-full py-2 rounded-xl transition-colors ${currentTab === tab.id ? 'bg-white/10 text-primary' : 'text-gray-500 hover:text-gray-300'}`}>
+                                <i className={`fas ${tab.icon} text-lg mb-1`}></i>
+                                <span className="text-[10px] font-bold">{tab.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    <footer className="border-t border-white/5 bg-black/30 pt-16 pb-28 md:pb-10 relative overflow-hidden">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+                        
+                        <div className="container mx-auto px-6 max-w-4xl">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-center md:text-right md:rtl:text-right md:ltr:text-left mb-12">
+                                <div>
+                                    <h3 className="font-bold text-xl mb-4 text-white flex items-center justify-center md:justify-start gap-2 pt-2">
+                                        <i className="fas fa-info-circle text-primary"></i> {t.aboutUsTitle}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm leading-relaxed">
+                                        {t.aboutUsText}
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col items-center md:items-start">
+                                    <h3 className="font-bold text-xl mb-4 text-white flex items-center gap-2 pt-2">
+                                        <i className="fas fa-link text-primary"></i> {t.followUs}
+                                    </h3>
+                                    <div className="flex gap-4">
+                                        <a href="https://x.com/digitalcenqt" target="_blank" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-[#1DA1F2] hover:border-[#1DA1F2] hover:bg-[#1DA1F2]/10 transition-all text-lg"><i className="fab fa-twitter"></i></a>
+                                        <a href="https://www.instagram.com/digitalcenter3481?igsh=MXgzeTI2NGNtcmx3Zw==" target="_blank" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-[#E1306C] hover:border-[#E1306C] hover:bg-[#E1306C]/10 transition-all text-lg"><i className="fab fa-instagram"></i></a>
+                                        <a href="https://youtube.com/@digitalcenter76lk?si=1-ol7iamHGUKbvEs" target="_blank" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-[#FF0000] hover:border-[#FF0000] hover:bg-[#FF0000]/10 transition-all text-lg"><i className="fab fa-youtube"></i></a>
+                                        <a href="https://www.tiktok.com/@digital.center95?is_from_webapp=1&sender_device=pc" target="_blank" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white hover:bg-white/10 transition-all text-lg"><i className="fab fa-tiktok"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="text-center border-t border-white/5 pt-6">
+                                <p className="text-gray-600 text-sm font-medium flex items-center justify-center gap-1">
+                                    © {new Date().getFullYear()} {t.brand}. صنع بشغف <i className="fas fa-heart text-red-500/70 text-xs"></i>
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <Modal isOpen={showLogin} onClose={() => setShowLogin(false)} title={t.login}>
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 mb-2">{t.adminUsername}</label>
+                                <input name="email" type="email" required className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:border-primary outline-none transition" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 mb-2">{t.adminPassword}</label>
+                                <input name="password" type="password" required className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white focus:border-primary outline-none transition" />
+                            </div>
+                            <button type="submit" className="w-full bg-primary hover:bg-teal-500 py-3.5 rounded-xl font-bold text-white transition mt-2 shadow-lg shadow-primary/20">{t.login}</button>
+                        </form>
+                    </Modal>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
